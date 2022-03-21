@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
 
   gpu_selector d_selector;
   queue q(d_selector);
+  cout << "Running on device: " << q.get_device().get_info<info::device::name>() << "\n";
 
   size_t num_items = 1024;
   if (argc == 2) {
