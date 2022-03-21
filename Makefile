@@ -3,7 +3,7 @@
 #################################
 
 CXX=dpcpp
-CXXFLAGS=-fsycl-targets=spir64_gen -Xs "-device tgllp" -O3  -std=c++20
+CXXFLAGS=-fsycl-targets=spir64_gen -Xs "-device tgllp" -O3  -std=c++20 -I./include
 CXXLIBS=
 CXXSRC=$(wildcard *.cpp)
 CXXTARGET=$(basename $(CXXSRC))
