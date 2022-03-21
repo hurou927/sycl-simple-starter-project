@@ -1,14 +1,8 @@
 
 #include <CL/sycl.hpp>
-#include <CL/sycl/access/access.hpp>
-#include <CL/sycl/atomic.hpp>
-#include <CL/sycl/event.hpp>
-#include <CL/sycl/memory_enums.hpp>
-#include <CL/sycl/nd_item.hpp>
-#include <algorithm>
-#include <ext/oneapi/atomic_ref.hpp>
-#include <helpers/timestamp.hpp>
 #include <iostream>
+
+#include <helpers/timestamp.hpp>
 
 using namespace cl::sycl;
 using namespace std;
@@ -50,14 +44,16 @@ void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
   free(DEVICE_RESULT, q);
   t.print();
 
-  auto end = kernel_event.get_profiling_info<info::event_profiling::command_end>();
-  auto start = kernel_event.get_profiling_info<info::event_profiling::command_start>();
-  std::cout << "kernel execution time without submission: " << (end - start) / 1.0e6 << " ms\n";
+  auto end =
+      kernel_event.get_profiling_info<info::event_profiling::command_end>();
+  auto start =
+      kernel_event.get_profiling_info<info::event_profiling::command_start>();
+  std::cout << "kernel execution time without submission: "
+            << (end - start) / 1.0e6 << " ms\n";
   return;
 }
 
-template <typename T>
-void show_data(T *data, size_t num_items) {
+template <typename T> void show_data(T *data, size_t num_items) {
   if (num_items < 20) {
     for (int i = 0; i < 10; i++)
       cout << data[i] << ",";
