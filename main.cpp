@@ -15,11 +15,19 @@ template <typename T>
 void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
   assert(num_items % NUM_THREADS_PER_GROUP == 0);
   /* property_list properties{sycl::property::queue::enable_profiling()}; */
+
+  t.stamp("dummy malloc to avoid some overhead(?)");
+  T *_DEVICE_DATA = static_cast<T *>(malloc_device(sizeof(T), q));
+  t.stamp("malloc 1");
   T *DEVICE_RESULT = static_cast<T *>(malloc_device(num_items * sizeof(T), q));
-  t.stamp("malloc");
+  t.stamp("malloc 2");
+  T *DEVICE_RESULT_COPIED = static_cast<T *>(malloc_device(num_items * sizeof(T), q));
+  t.stamp("memset");
   q.memset(DEVICE_RESULT, 0, sizeof(T) * num_items).wait();
   t.stamp("memcpy h->d");
   q.memcpy(DEVICE_RESULT, host_input_buf, sizeof(T) * num_items).wait();
+  t.stamp("memcpy d->d");
+  q.memcpy(DEVICE_RESULT_COPIED, DEVICE_RESULT, sizeof(T) * num_items).wait();
   t.stamp("kernel");
   event kernel_event = q.submit([&](handler &cgh) {
     auto localRange = range<1>(NUM_THREADS_PER_GROUP);
@@ -38,10 +46,12 @@ void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
                                kernel);
   });
   kernel_event.wait();
-  t.stamp("memcpy d -> h");
+  t.stamp("memcpy d->h");
   q.memcpy(host_input_buf, DEVICE_RESULT, sizeof(T) * num_items).wait();
   t.stamp();
+  free(_DEVICE_DATA, q);
   free(DEVICE_RESULT, q);
+  free(DEVICE_RESULT_COPIED, q);
   t.print();
 
   auto end =
