@@ -26,7 +26,7 @@ dpcpp -fsycl-targets=spir64_gen -Xs "-device tgllp" -O3  -std=c++20 -I./include 
 Compilation from IR - skipping loading of FCL
 Build succeeded.
 
-$ ./main
+$ ./main 1024
 Running on device: Intel(R) UHD Graphics 750 [0x4c8a]
 num_items: 1048576
 1. dummy malloc to avoid some overhead(?). 0.022387 ms
