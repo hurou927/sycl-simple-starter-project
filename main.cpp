@@ -1,8 +1,9 @@
-
 #include <CL/sycl.hpp>
 #include <iostream>
+#include <iomanip>
 
 #include <helpers/timestamp.hpp>
+
 
 using namespace cl::sycl;
 using namespace std;
@@ -52,7 +53,6 @@ void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
   free(_DEVICE_DATA, q);
   free(DEVICE_RESULT, q);
   free(DEVICE_RESULT_COPIED, q);
-  t.print();
 
   auto end =
       kernel_event.get_profiling_info<info::event_profiling::command_end>();
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   size_t num_items = 1024;
   if (argc == 2) {
-    num_items = atoi(argv[1]) * 1024;
+    num_items = atoi(argv[1]) * 1024 * 1024;
   }
   cout << "num_items: " << num_items << "\n";
   int *host_data = static_cast<int *>(malloc(num_items * sizeof(int)));
@@ -95,6 +95,11 @@ int main(int argc, char *argv[]) {
 
   run_kernel<int>(q, host_data, num_items);
 
+  for(auto &e: t.data()) {
+    auto sec = e.elapsed_time.count() / 1e9;
+    auto mbytes = static_cast<double> (sizeof(int)) * num_items / 1024 / 1024 / 1024;
+    printf("%-15s\t%7.3f\t%7.3f GB/s\n",e.name.c_str(),sec*1e3,mbytes/sec);
+  }
   show_data(host_data, num_items);
 
   free(host_data);

@@ -18,6 +18,13 @@ public:
   Duration(T name, TimeDurationT duration) : name(name), duration(duration) {}
 };
 
+template <typename T> class ElapsedTime {
+  public:
+    T name;
+    TimeUnit elapsed_time;
+    ElapsedTime(T name, TimeUnit elapsed_time): name(name), elapsed_time(elapsed_time) {};
+};
+
 template <typename T> class TimeStamp {
 private:
   std::optional<T> accumName = std::nullopt;
@@ -46,6 +53,14 @@ public:
   };
 
   std::vector<Duration<T>> getDurations() { return durations; };
+
+  std::vector<ElapsedTime<T>> data() {
+    std::vector<ElapsedTime<T>> elapsed_times;
+    for (const auto &e: durations) {
+      elapsed_times.push_back(ElapsedTime(e.name, std::chrono::duration_cast<TimeUnit>(e.duration)));
+    }
+    return elapsed_times;
+  }
 
   void print() {
     int c = 1;
