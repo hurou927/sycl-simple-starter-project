@@ -26,19 +26,20 @@ dpcpp -fsycl-targets=spir64_gen -Xs "-device tgllp" -O3  -std=c++20 -I./include 
 Compilation from IR - skipping loading of FCL
 Build succeeded.
 
-$ ./main 1024
+$ ./main 256
 Running on device: Intel(R) UHD Graphics 750 [0x4c8a]
 num_items: 268435456
-kernel execution time without submission: 52.1155 ms
-dummy malloc to avoid some overhead(?)    0.040 24979.392 GB/s
-malloc 1          0.004 238038.562 GB/s
-malloc 2          0.004 276319.425 GB/s
-memset          176.275   5.673 GB/s
-memcpy h->d      67.183  14.885 GB/s
-memcpy d->d     170.441   5.867 GB/s
-kernel           52.611  19.008 GB/s
-memcpy d->h      62.577  15.980 GB/s
+dummy malloc to avoid some overhead(?)    0.042 ms      23952.670 GB/s
+malloc 1          0.004 ms      281373.101 GB/s
+malloc 2          0.003 ms      371609.067 GB/s
+memset          178.963 ms        5.588 GB/s
+memcpy h->d      75.688 ms       13.212 GB/s
+memcpy d->d     172.949 ms        5.782 GB/s
+kernel           52.545 ms       19.031 GB/s
+memcpy d->h      71.945 ms       13.900 GB/s
+sycl event: kernel,52.049632 ms
 -1,-2,-3,-4,-5,-6,-7,-8,-9,-10,...,-268435447,-268435448,-268435449,-268435450,-268435451,-268435452,-268435453,-268435454,-268435455,-268435456,
+
 ```
 
 ## References
