@@ -33,7 +33,9 @@ private:
   std::vector<Duration<T>> durations;
 
 public:
-  TimeStamp(){};
+  TimeStamp(){
+    durations.reserve(capacity);
+  };
 
   void stamp(T name) {
     auto dp = std::chrono::steady_clock::now();

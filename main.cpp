@@ -3,6 +3,7 @@
 #include <iomanip>
 
 #include <helpers/timestamp.hpp>
+#include <helpers/event_holder.hpp>
 
 
 using namespace cl::sycl;
@@ -11,6 +12,7 @@ using namespace std;
 constexpr int NUM_THREADS_PER_GROUP = 64;
 
 auto t = TimeStamp<std::string>();
+auto events = EventHolder<std::string>();
 
 template <typename T>
 void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
@@ -46,6 +48,7 @@ void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
     cgh.parallel_for<class pm>(nd_range<1>{range<1>(num_items), localRange},
                                kernel);
   });
+  events.push("kernel", kernel_event);
   kernel_event.wait();
   t.stamp("memcpy d->h");
   q.memcpy(host_input_buf, DEVICE_RESULT, sizeof(T) * num_items).wait();
@@ -54,12 +57,6 @@ void run_kernel(queue &q, T *host_input_buf, size_t num_items) {
   free(DEVICE_RESULT, q);
   free(DEVICE_RESULT_COPIED, q);
 
-  auto end =
-      kernel_event.get_profiling_info<info::event_profiling::command_end>();
-  auto start =
-      kernel_event.get_profiling_info<info::event_profiling::command_start>();
-  std::cout << "kernel execution time without submission: "
-            << (end - start) / 1.0e6 << " ms\n";
   return;
 }
 
@@ -99,6 +96,10 @@ int main(int argc, char *argv[]) {
     auto sec = e.elapsed_time.count() / 1e9;
     auto mbytes = static_cast<double> (sizeof(int)) * num_items / 1024 / 1024 / 1024;
     printf("%-15s\t%7.3f ms\t%7.3f GB/s\n",e.tag.c_str(),sec*1e3,mbytes/sec);
+  }
+
+  for (auto &e: events.data()) {
+    printf("sycl event: %s,%f ms\n", e.tag.c_str(), e.get_submission_ms());
   }
   show_data(host_data, num_items);
 
