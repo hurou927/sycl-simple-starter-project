@@ -23,6 +23,12 @@ template <typename T> class ElapsedTime {
     T tag;
     TimeUnit elapsed_time;
     ElapsedTime(T tag, TimeUnit elapsed_time): tag(tag), elapsed_time(elapsed_time) {};
+    double get_ms() {
+      return elapsed_time.count() / 1e6;
+    };
+    double get_sec() {
+      return elapsed_time.count() / 1e9;
+    };
 };
 
 template <typename T> class TimeStamp {
