@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
   for(auto &e: t.data()) {
     auto sec = e.elapsed_time.count() / 1e9;
     auto mbytes = static_cast<double> (sizeof(int)) * num_items / 1024 / 1024 / 1024;
-    printf("%-15s\t%7.3f\t%7.3f GB/s\n",e.name.c_str(),sec*1e3,mbytes/sec);
+    printf("%-15s\t%7.3f ms\t%7.3f GB/s\n",e.tag.c_str(),sec*1e3,mbytes/sec);
   }
   show_data(host_data, num_items);
 

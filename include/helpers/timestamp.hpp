@@ -20,9 +20,9 @@ public:
 
 template <typename T> class ElapsedTime {
   public:
-    T name;
+    T tag;
     TimeUnit elapsed_time;
-    ElapsedTime(T name, TimeUnit elapsed_time): name(name), elapsed_time(elapsed_time) {};
+    ElapsedTime(T tag, TimeUnit elapsed_time): tag(tag), elapsed_time(elapsed_time) {};
 };
 
 template <typename T> class TimeStamp {
